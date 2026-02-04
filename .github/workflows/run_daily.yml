@@ -25,7 +25,7 @@ jobs:
 
       - name: 3. Cài thư viện Pandas
         run: |
-          pip install pandas
+          pip install pandas requests lxml
 
       - name: 4. Chạy file code main.py
         run: python main.py
