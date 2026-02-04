@@ -32,8 +32,8 @@ jobs:
 
       - name: 5. Lưu kết quả (file CSV) lại vào kho
         run: |
-          git config --global user.name 'GitHub Action Bot'
-          git config --global user.email 'action@github.com'
+          git config --global user.name 'Mai Thanh Suyel'
+          git config --global user.email 'suyelmai67@gmail.com'
           git add lich_su_gia_xang.csv
           git commit -m "Tu dong cap nhat gia xang" || exit 0
           git push
