@@ -1,0 +1,39 @@
+name: Tu Dong Lay Gia Xang
+
+# Chạy vào 7:00 sáng mỗi ngày (giờ VN là UTC+7 nên set cron là 0:00 UTC)
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  # Cho phép bấm nút chạy thử thủ công
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Tải code về máy ảo
+        uses: actions/checkout@v4
+
+      - name: 2. Cài đặt Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: 3. Cài thư viện Pandas
+        run: |
+          pip install pandas
+
+      - name: 4. Chạy file code main.py
+        run: python main.py
+
+      - name: 5. Lưu kết quả (file CSV) lại vào kho
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action@github.com'
+          git add lich_su_gia_xang.csv
+          git commit -m "Tu dong cap nhat gia xang" || exit 0
+          git push
