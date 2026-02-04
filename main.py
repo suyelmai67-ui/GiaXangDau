@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta # Nhớ import timedelta
 import os
 
 # CẤU HÌNH
@@ -18,7 +18,6 @@ def lay_gia_xang_thong_minh():
         response = requests.get(URL, headers=headers)
         
         # --- KỸ THUẬT MỚI: DÙNG PANDAS QUÉT TOÀN BỘ BẢNG ---
-        # Hàm read_html sẽ tự tìm tất cả các bảng <table> trên trang web
         danh_sach_bang = pd.read_html(response.text)
         
         if len(danh_sach_bang) == 0:
@@ -28,16 +27,13 @@ def lay_gia_xang_thong_minh():
         # Thường bảng giá nằm ở vị trí đầu tiên (index 0)
         df_bang_gia = danh_sach_bang[0]
         
-        # Đổi tên cột cho dễ xử lý (Cột 0 là Tên, Cột 1 là Giá Vùng 1)
-        # Chúng ta chỉ quan tâm 2 cột đầu
+        # Đổi tên cột cho dễ xử lý
         df_bang_gia = df_bang_gia.iloc[:, :2]
         df_bang_gia.columns = ['Loai_Xang', 'Gia_Vung_1']
         
         print("--- Tim thay bang gia ---")
-        # print(df_bang_gia) # Bỏ comment dòng này nếu muốn xem cả bảng
         
         # LỌC DỮ LIỆU
-        # Tìm dòng mà cột 'Loai_Xang' có chứa chữ "RON 95"
         gia_ron95 = 0
         gia_e5 = 0
         
@@ -65,11 +61,15 @@ def lay_gia_xang_thong_minh():
             print("Van khong lay duoc gia. Web doi cau truc qua nhieu!")
             return None
 
-        # Đóng gói
+        # --- PHẦN SỬA LỖI Ở ĐÂY ---
+        # 1. Tính toán giờ TRƯỚC KHI tạo dictionary
+        gio_vn = datetime.utcnow() + timedelta(hours=7)
+
+        # 2. Đóng gói (Lưu ý: Tôi đã thêm lại cột RON_95 bị thiếu)
         du_lieu = {
-            'Ngay': [datetime.now().strftime("%Y-%m-%d")],
-            'Gio': [datetime.now().strftime("%H:%M:%S")],
-            'RON_95': [gia_ron95],
+            'Ngay': [gio_vn.strftime("%Y-%m-%d")],
+            'Gio': [gio_vn.strftime("%H:%M:%S")],
+            'RON_95': [gia_ron95], 
             'E5_RON_92': [gia_e5]
         }
         return pd.DataFrame(du_lieu)
